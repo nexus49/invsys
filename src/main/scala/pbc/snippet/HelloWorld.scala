@@ -7,7 +7,9 @@ package pbc {
 
     class HelloWorld {
       def howdy(in: NodeSeq): NodeSeq =
-        Helpers.bind("b", in, "time" -> (new _root_.java.util.Date).toString)
+    	  
+        Helpers.bind("b", in, "time" -> (new _root_.java.util.Date).toString, "hallo" -> "rockOn")
+        
     }
 
   }
