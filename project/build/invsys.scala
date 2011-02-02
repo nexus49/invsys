@@ -1,6 +1,7 @@
 import sbt._
+import de.element34.sbteclipsify._
 
-class InvSysProject(info: ProjectInfo) extends DefaultWebProject(info)
+class InvSysProject(info: ProjectInfo) extends DefaultWebProject(info) with Eclipsify
 {
   val liftVersion = "2.2"
 
