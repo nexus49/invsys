@@ -1,8 +1,7 @@
 package pbc.schema
 
-import net.liftweb.common.Loggable
+import net.liftweb.common.{Loggable, Empty}
 import scala.tools.nsc.util.trace
-import net.liftweb.common.Empty
 import bootstrap.liftweb.Boot
 import net.liftweb.util.Props
 import java.sql.SQLException
@@ -10,8 +9,7 @@ import org.squeryl.adapters.H2Adapter
 import net.liftweb.squerylrecord.SquerylRecord
 import net.liftweb.mapper.{ StandardDBVendor, DefaultConnectionIdentifier, DB }
 import org.junit.Before
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.ShouldMatchersForJUnit
+import org.scalatest.junit.{AssertionsForJUnit, ShouldMatchersForJUnit}
 import org.junit.Test
 import org.squeryl.{ SessionFactory, Session }
 
