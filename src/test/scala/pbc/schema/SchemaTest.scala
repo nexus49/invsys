@@ -41,11 +41,9 @@ class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit with Log
         author.name.set("Jim Carry")
         Library.authors.insert(author)
 
-        val authors = from(Library.authors)(b => select(b))
-        logger.info("Selected authors:")
-        logger.info(authors.single.name.value) 
-        
-        authors.single.name.value should be ("Jim Carry")
+        val newAuthor = from(Library.authors)(b => select(b)).single
+        logger.info("Selected authors: %s".format(newAuthor.name.value))
+        newAuthor.name.value should be ("Jim Carry")
       }
     }
   }
