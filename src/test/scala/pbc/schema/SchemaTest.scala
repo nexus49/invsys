@@ -1,38 +1,35 @@
 package pbc.schema
 
+import net.liftweb.common.Empty
 import bootstrap.liftweb.Boot
 import net.liftweb.util.Props
 import java.sql.SQLException
 import org.squeryl.adapters.H2Adapter
 import net.liftweb.squerylrecord.SquerylRecord
-import net.liftweb.mapper.StandardDBVendor
-import net.liftweb.mapper.DefaultConnectionIdentifier
-import net.liftweb.mapper.DB
+import net.liftweb.mapper.{ StandardDBVendor, DefaultConnectionIdentifier, DB }
 import org.junit.Before
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.ShouldMatchersForJUnit
 import org.junit.Test
+import org.squeryl.{SessionFactory,Session}
 
 class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
 
   @Before
   def setup() {
-	  val boot:Boot = new Boot
-	  boot.boot
+    DB.defineConnectionManager(DefaultConnectionIdentifier,
+      new StandardDBVendor("org.h2.Driver", "jdbc:h2:test", Empty, Empty))
+
+    SquerylRecord.init(() => new H2Adapter)
+    Library.drop
   }
 
   @Test
   def verifySelect() {
-    import Library._
+      val author = Author.createRecord
+      Library.authors.insert(author)
 
-    val str: String = "test"
-    str should be("test")
-
-    val newAuthor = authors.insert(new Author())
-
-    val aId: Long = 0
-
-    //def selectedAuthor = from(authors)(s => where(s.id === id) select (s))
-
+      val authors = Library.authors
+      println(authors)
   }
 }

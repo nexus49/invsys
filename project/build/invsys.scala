@@ -2,7 +2,7 @@ import sbt._
 import de.element34.sbteclipsify._
 
 class InvSysProject(info: ProjectInfo) extends DefaultWebProject(info) with Eclipsify {
-  val liftVersion = "2.2"
+  val liftVersion = "2.3-M1"
   val scalaVersion = "2.8.1"
 
   // uncomment the following if you want to use the snapshot repo
