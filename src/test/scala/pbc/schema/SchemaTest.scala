@@ -11,7 +11,7 @@ import org.junit.Before
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.ShouldMatchersForJUnit
 import org.junit.Test
-import org.squeryl.{SessionFactory,Session}
+import org.squeryl.{ SessionFactory, Session }
 
 class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
 
@@ -21,15 +21,24 @@ class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
       new StandardDBVendor("org.h2.Driver", "jdbc:h2:test", Empty, Empty))
 
     SquerylRecord.init(() => new H2Adapter)
-    Library.drop
+    DB.use(DefaultConnectionIdentifier) { conn =>
+      {
+        Library.drop
+        Library.create
+      }
+    }
   }
 
   @Test
   def verifySelect() {
-      val author = Author.createRecord
-      Library.authors.insert(author)
+    DB.use(DefaultConnectionIdentifier) { conn =>
+      {
+        val author = Author.createRecord
+        Library.authors.insert(author)
 
-      val authors = Library.authors
-      println(authors)
+        val authors = Library.authors
+        println(authors)
+      }
+    }
   }
 }
