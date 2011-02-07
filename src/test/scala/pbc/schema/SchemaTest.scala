@@ -1,5 +1,7 @@
 package pbc.schema
 
+import net.liftweb.common.Loggable
+import scala.tools.nsc.util.trace
 import net.liftweb.common.Empty
 import bootstrap.liftweb.Boot
 import net.liftweb.util.Props
@@ -13,7 +15,9 @@ import org.scalatest.junit.ShouldMatchersForJUnit
 import org.junit.Test
 import org.squeryl.{ SessionFactory, Session }
 
-class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
+class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit with Loggable {
+
+  import org.squeryl.PrimitiveTypeMode._
 
   @Before
   def setup() {
@@ -33,11 +37,15 @@ class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
   def verifySelect() {
     DB.use(DefaultConnectionIdentifier) { conn =>
       {
-        val author = Author.createRecord
+        val author: Author = Author.createRecord
+        author.name.set("Jim Carry")
         Library.authors.insert(author)
 
-        val authors = Library.authors
-        println(authors)
+        val authors = from(Library.authors)(b => select(b))
+        logger.info("Selected authors:")
+        logger.info(authors.single.name.value) 
+        
+        authors.single.name.value should be ("Jim Carry")
       }
     }
   }
