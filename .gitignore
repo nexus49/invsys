@@ -1,2 +1,7 @@
 target/
 boot/
+lib_managed/
+*.db
+.project
+.classpath
+.scala_dependencies
