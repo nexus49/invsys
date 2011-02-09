@@ -7,6 +7,7 @@ class InvSysProject(info: ProjectInfo) extends DefaultWebProject(info) with Ecli
   val liftVersion = "2.2"
   val scalateVersion = "1.1"
   val liftMongoDBVersion = "2.2"
+  val liftJSONVersion = "2.2"
 
   override def unmanagedClasspath =
     super.unmanagedClasspath +++ buildCompilerJar
@@ -18,6 +19,7 @@ class InvSysProject(info: ProjectInfo) extends DefaultWebProject(info) with Ecli
   
     "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-mongodb" % liftMongoDBVersion,
+    "net.liftweb" %% "lift-json" % liftJSONVersion,
     
     "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default",
     
