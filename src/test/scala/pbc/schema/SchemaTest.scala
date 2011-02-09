@@ -16,6 +16,11 @@ import org.squeryl.{ SessionFactory, Session }
 class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit with Loggable {
 
   import org.squeryl.PrimitiveTypeMode._
+  import pbc.schema.Library._
+
+  val initialAuthor = "Ken Follet"
+  val initialPublisher = "Random House"
+	  val initialBook = "Saeulen der Erde"
 
   @Before
   def setup() {
@@ -27,6 +32,18 @@ class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit with Log
       {
         Library.drop
         Library.create
+
+        val publisher: Publisher = Publisher.createRecord
+        publisher.name.set(initialPublisher)
+        publishers.insert(publisher)
+
+        val author: Author = Author.createRecord
+        author.name.set(initialAuthor)
+        authors insert (author)
+        
+        val book: Book = Book.createRecord
+        book.name.set(initialBook)
+        books insert (book)
       }
     }
   }
@@ -40,7 +57,7 @@ class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit with Log
         author.name.set(testName)
         Library.authors.insert(author)
 
-        val newAuthor = from(Library.authors)(b => select(b)).single
+        val newAuthor = from(Library.authors)(b => where(b.name.value === testName) select (b)).single
         logger.info("Selected authors: %s".format(newAuthor.name.value))
         newAuthor.name.value should be(testName)
       }
@@ -54,12 +71,12 @@ class SchemaTest extends AssertionsForJUnit with ShouldMatchersForJUnit with Log
     verifySelect
     DB.use(DefaultConnectionIdentifier) { conn =>
       {
-    	val newName = "Hans Meier"
+        val newName = "Hans Meier"
         val author = from(Library.authors)(b => where(b.name.is === testName) select (b)).single
         author.name.set(newName)
         authors.update(author)
-        
-        val updatedAuthor = from(Library.authors)(b => select(b)).single
+
+        val updatedAuthor = from(Library.authors)(b => where(b.name.is === newName) select (b)).single
         logger.info("Selected authors: %s".format(updatedAuthor.name.value))
         updatedAuthor.name.value should be(newName)
       }

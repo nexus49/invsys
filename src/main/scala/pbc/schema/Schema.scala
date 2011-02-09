@@ -1,6 +1,7 @@
 package pbc.schema
 
-import net.liftweb.record.{MetaRecord, Record}
+import org.squeryl.dsl.{ OneToMany, ManyToOne }
+import net.liftweb.record.{ MetaRecord, Record }
 import org.squeryl.Schema
 import java.sql.Timestamp
 import java.util.Date
@@ -19,7 +20,7 @@ class Author private () extends Record[Author] with KeyedRecord[Long] {
   val age = new OptionalIntField(this)
   val birthday = new OptionalDateTimeField(this)
 
-  def books: Query[Book] = Library.books.where(_.authorId.is === id)
+  lazy val books: OneToMany[Book] = Library.authorsToBooks.left(this)
 
   override def toString = "Author.createRecord.idField(" + idField.value + ", " + name.value + ", " + age.value + ")"
 }
@@ -53,12 +54,8 @@ class Book private () extends Record[Book] with KeyedRecord[Long] {
 
   val secondaryGenre = new OptionalEnumField(this, Genre)
 
-  def author = Library.authors.lookup(authorId.value)
-  //def publisher = TestSchema.publishers.lookup(publisherId)
-
-  //def author = TestSchema.authors.where(a => a.id === authorId)
-
-  def publisher = Library.publishers.where(p => p.id === publisherId.is)
+  lazy val author: ManyToOne[Author] = Library.authorsToBooks.right(this)
+  lazy val publisher: ManyToOne[Publisher] = Library.publishersToBooks.right(this)
 }
 
 object Book extends Book with MetaRecord[Book]
@@ -70,7 +67,7 @@ class Publisher private () extends Record[Publisher] with KeyedRecord[Long] {
   val idField = new LongField(this, 1)
   val name = new StringField(this, "")
 
-  def books: Query[Book] = Library.books.where(_.publisherId.is === id)
+  lazy val books: OneToMany[Book] = Library.publishersToBooks.left(this)
 }
 
 object Publisher extends Publisher with MetaRecord[Publisher]
@@ -80,6 +77,9 @@ object Library extends Schema {
   val authors = table[Author]
   val books = table[Book]
   val publishers = table[Publisher]
+
+  val authorsToBooks = oneToManyRelation(authors, books).via((s, c) => s.id === c.idField.is)
+  val publishersToBooks = oneToManyRelation(publishers, books).via((s, c) => s.id === c.idField.is)
 
   // this is a test schema, we can expose the power tools ! :
   override def drop = super.drop
