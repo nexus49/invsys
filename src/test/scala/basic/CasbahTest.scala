@@ -9,33 +9,70 @@ import org.junit.Assert._
 import org.junit.Test
 import org.junit.Before
 import java.util.Date
-import com.mongodb._
 import org.bson.types._
-
 import com.mongodb.casbah.Imports._
-import com.mongodb._
-class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit {
+import net.liftweb.common.Loggable
+import com.mongodb.BasicDBObject
+
+class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
+
+  val mongoCon = MongoConnection()
+  val mongoDb = mongoCon("test")
+  val mongoColl = mongoDb("casbah_test")
 
   @Before
   def initialize() {
+    // clear collection
+    for (x <- mongoColl.find) {
+      logger.info("removed %s".format(x))
+      mongoColl -= x
+    }
   }
 
   @Test
   def verifyEasy() {
-    val testCollection = MongoConnection()("test")("casbah_test")
-
     // syntax option 1
-    val newObj = MongoDBObject("foo" -> "bar",
+    val newObj = MongoDBObject(
+      "foo" -> "bar",
       "x" -> "y",
       "pie" -> 3.14,
       "spam" -> "eggs")
-    testCollection += newObj
-      
+    mongoColl += newObj
+
     // syntax option 2
     val builder = MongoDBObject.newBuilder
     builder += "author" -> "author"
     builder += "msg" -> "msg"
-    testCollection += builder.result.asDBObject
+    mongoColl += builder.result.asDBObject
+  }
+
+  @Test
+  // Verify clean up works
+  def shouldVerifyEmptyColl() {
+    val allElements = mongoColl.find
+    allElements.size should be(0)
+  }
+
+  @Test
+  def shouldVerifyInsertAndSelect() {
+    //Insert TestObject
+    mongoColl += MongoDBObject(
+      "id" -> "1",
+      "type" -> "testObject",
+      "size" -> 3.14,
+      "name" -> "testName")
+
+    //create query
+    val query = new BasicDBObject();
+    query.put("type", "testObject")
+
+    //get result
+    val result: DBObject = mongoColl.findOne(query).get
+
+    // use result
+    logger.info("found %s".format(result))
+    val name = result("name")
+    result("name") should be("testName")
   }
 
 }
