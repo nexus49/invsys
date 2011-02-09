@@ -1,16 +1,13 @@
 package basic
 
 import org.scalatest.junit.ShouldMatchersForJUnit
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitRunner
-import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitSuite
 import scala.collection.mutable.ListBuffer
 import org.junit.Assert._
 import org.junit.Test
 import org.junit.Before
 
-class ScalaTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
+class ScalaTest extends JUnitSuite with ShouldMatchersForJUnit {
 
   var sb: StringBuilder = _
   var lb: ListBuffer[String] = _
