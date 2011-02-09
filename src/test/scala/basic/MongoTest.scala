@@ -9,7 +9,8 @@ import scala.collection.mutable.ListBuffer
 import org.junit.Assert._
 import org.junit.Test
 import org.junit.Before
-import net.liftweb.mongodb.MongoDB
+import net.liftweb.mongodb._
+import com.mongodb._
 
 class MongoTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
 
@@ -23,6 +24,18 @@ class MongoTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
 
   @Test def verifyEasy() { 
 	  	MongoDB.defineDb(DefaultMongoIdentifier, MongoAddress(MongoHost("localhost", 27017), "test_direct"))
+	  	
+	  	
+	  	MongoDB.use(DefaultMongoIdentifier) ( db => {
+  val doc = new BasicDBObject
+  doc.put("name", "MongoDB")
+  doc.put("type", "database")
+  doc.put("count", 1)
+  val coll = db.getCollection("testCollection")
+  // save the doc to the db
+  coll.save(doc)
+})
+
   }
 
 	
