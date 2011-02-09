@@ -65,6 +65,7 @@ class MongoTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
 case class Address(street: String, city: String)
 
 case class Child(name: String, age: Int, birthdate: Option[Date])
+
 case class Person(_id: String, name: String, age: Int, address: Address, children: List[Child])
   extends MongoDocument[Person] {
   def meta = Person
