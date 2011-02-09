@@ -57,19 +57,19 @@ class MongoTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
       27,
       Address("Bulevard", "Helsinki"),
       List(Child("Mary", 5, Some(date("2004-09-04T18:06:22.000Z"))), Child("Mazy", 3, None)))
-      
-     p.save
+    
+    p.save
   }
+}
 
-  case class Address(street: String, city: String)
-  case class Child(name: String, age: Int, birthdate: Option[Date])
-  case class Person(_id: String, name: String, age: Int, address: Address, children: List[Child])
-    extends MongoDocument[Person] {
-    def meta = Person
-  }
-  object Person extends MongoDocumentMeta[Person] {
-    override def mongoIdentifier = DefaultMongoIdentifier
-    override def collectionName = "mypersons"
-  }
+case class Address(street: String, city: String)
 
+case class Child(name: String, age: Int, birthdate: Option[Date])
+case class Person(_id: String, name: String, age: Int, address: Address, children: List[Child])
+  extends MongoDocument[Person] {
+  def meta = Person
+}
+object Person extends MongoDocumentMeta[Person] {
+  override def mongoIdentifier = DefaultMongoIdentifier
+  override def collectionName = "mypersons"
 }
