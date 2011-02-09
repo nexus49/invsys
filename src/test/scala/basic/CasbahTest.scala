@@ -3,7 +3,6 @@ package basic
 import org.scalatest.junit.ShouldMatchersForJUnit
 import org.scalatest.junit.AssertionsForJUnit
 import org.scalatest.junit.JUnitRunner
-import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitSuite
 import scala.collection.mutable.ListBuffer
 import org.junit.Assert._
@@ -15,7 +14,7 @@ import org.bson.types._
 
 import com.mongodb.casbah.Imports._
 import com.mongodb._
-class CasbahTest extends AssertionsForJUnit with ShouldMatchersForJUnit {
+class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Before
   def initialize() {
