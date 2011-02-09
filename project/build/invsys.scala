@@ -16,13 +16,14 @@ class InvSysProject(info: ProjectInfo) extends DefaultWebProject(info) with Ecli
 	"org.scala-lang" % "scala-compiler" % scalaVersion % "compile->default",
   
     "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default",
-
     "net.liftweb" % "lift-mongodb" % "2.0",
     
     "org.mortbay.jetty" % "jetty" % "6.1.22" % "test->default",
+    
     "junit" % "junit" % "4.5" % "test->default",
+    "org.scalatest" % "scalatest" % "1.2",
+    
     "ch.qos.logback" % "logback-classic" % "0.9.26",
-    //"org.scala-tools.testing" %% "specs" % "1.6.6" % "test->default",
     
     "net.liftweb" % ("lift-scalate_" + scalaVersion) % liftVersion % "compile->default"
 
