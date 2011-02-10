@@ -74,5 +74,32 @@ class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
     val name = result("name")
     result("name") should be("testName")
   }
+  
+  @Test
+  def shouldVerifyInsertWithChildAndSelect() {
+    //Insert TestObject
+    mongoColl += MongoDBObject(
+      "id" -> "1",
+      "type" -> "testObject",
+      "size" -> 3.14,
+      "name" -> "testName",
+      "child" -> MongoDBObject("id" -> "2", "name" -> "child", "childchild" -> MongoDBObject("id" -> "3", "name" -> "childchild" )))
+
+    //create query
+    val query = new BasicDBObject();
+    query.put("type", "testObject")
+
+    //get result
+    val result: DBObject = mongoColl.findOne(query).get
+
+    // use result
+    logger.info("found %s".format(result))
+    val child:DBObject = result("child").asInstanceOf[DBObject]
+    val childchild:DBObject = child("childchild").asInstanceOf[DBObject]
+    val name = result("name")
+    result("name") should be("testName")
+    child("name") should be ("child")
+    childchild("name") should be ("childchild")
+  }
 
 }
