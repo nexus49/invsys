@@ -1,8 +1,6 @@
 package basic
 
 import org.scalatest.junit.ShouldMatchersForJUnit
-import org.scalatest.junit.AssertionsForJUnit
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.junit.JUnitSuite
 import scala.collection.mutable.ListBuffer
 import org.junit.Assert._
@@ -18,15 +16,17 @@ class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
 
   val mongoCon = MongoConnection()
   val mongoDb = mongoCon("test")
+
   val mongoColl = mongoDb("casbah_test")
+  val mongoCustomersColl = mongoDb("customers")
+  val mongoOrdersColl = mongoDb("orders")
 
   @Before
   def initialize() {
     // clear collection
-    for (x <- mongoColl.find) {
-      logger.info("removed %s".format(x))
-      mongoColl -= x
-    }
+    for (x <- mongoColl.find)  mongoColl -= x 
+    for (x <- mongoCustomersColl.find)  mongoCustomersColl -= x 
+    for (x <- mongoOrdersColl.find)  mongoOrdersColl -= x 
   }
 
   @Test
@@ -46,15 +46,15 @@ class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
     mongoColl += builder.result.asDBObject
   }
 
-  @Test
-  // Verify clean up works
+  @Test // Verify clean up works
   def shouldVerifyEmptyColl() {
-    val allElements = mongoColl.find
-    allElements.size should be(0)
+    mongoColl.find.size should be(0)
+    mongoCustomersColl.find.size should be(0)
+    mongoOrdersColl.find.size should be(0)
   }
 
   @Test
-  def shouldVerifyInsertAndSelect() {
+  def shouldVerifyInsert() {
     //Insert TestObject
     mongoColl += MongoDBObject(
       "id" -> "1",
@@ -74,16 +74,16 @@ class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
     val name = result("name")
     result("name") should be("testName")
   }
-  
+
   @Test
-  def shouldVerifyInsertWithChildAndSelect() {
+  def shouldVerifyInsertWithEmbeddedChild {
     //Insert TestObject
     mongoColl += MongoDBObject(
       "id" -> "1",
       "type" -> "testObject",
       "size" -> 3.14,
       "name" -> "testName",
-      "child" -> MongoDBObject("id" -> "2", "name" -> "child", "childchild" -> MongoDBObject("id" -> "3", "name" -> "childchild" )))
+      "child" -> MongoDBObject("id" -> "2", "name" -> "child", "childchild" -> MongoDBObject("id" -> "3", "name" -> "childchild")))
 
     //create query
     val query = new BasicDBObject();
@@ -94,12 +94,54 @@ class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
 
     // use result
     logger.info("found %s".format(result))
-    val child:DBObject = result("child").asInstanceOf[DBObject]
-    val childchild:DBObject = child("childchild").asInstanceOf[DBObject]
+    val child: DBObject = result("child").asInstanceOf[DBObject]
+    val childchild: DBObject = child("childchild").asInstanceOf[DBObject]
     val name = result("name")
     result("name") should be("testName")
-    child("name") should be ("child")
-    childchild("name") should be ("childchild")
+    child("name") should be("child")
+    childchild("name") should be("childchild")
   }
 
+  @Test
+  def shouldVerifyInsertWithReferencedChild() {
+    //Insert TestObject
+    val customer: DBObject = MongoDBObject(
+      "id" -> "1",
+      "firstname" -> "Bastian",
+      "lastname" -> "Mueller")
+    mongoCustomersColl += customer
+
+    logger.info(mongoDb.underlying)
+    logger.info(customer)
+
+    val order: DBObject = MongoDBObject(
+      "ordernumber" -> "1",
+      "order_creation" -> new Date,
+      "customer" -> customer._id)
+    mongoOrdersColl += order
+
+    //create query for customer
+    val custQuery = new BasicDBObject();
+    custQuery.put("id", "1")
+    val customerResult: DBObject = mongoCustomersColl.findOne(custQuery).get
+    logger.info(customerResult)
+    
+    customerResult("firstname") should be ("Bastian")
+    
+    //create query for the customers orders
+    val ordersQuery = new BasicDBObject();
+    ordersQuery.put("customer", customerResult._id)
+    val ordersResult: DBObject = mongoOrdersColl.findOne(ordersQuery).get
+    logger.info(ordersQuery)
+    
+    ordersResult("ordernumber") should be ("1")
+
+    //select order separately
+    val orderQuery = new BasicDBObject();
+    orderQuery.put("ordernumber", "1")
+    val orderResult: DBObject = mongoOrdersColl.findOne(orderQuery).get
+    logger.info(orderResult)
+    
+    orderResult("ordernumber") should be ("1")
+  }
 }
