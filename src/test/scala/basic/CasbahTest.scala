@@ -86,7 +86,7 @@ class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
       "child" -> MongoDBObject("id" -> "2", "name" -> "child", "childchild" -> MongoDBObject("id" -> "3", "name" -> "childchild")))
 
     //create query
-    val query = new BasicDBObject();
+    val query = new BasicDBObject
     query.put("type", "testObject")
 
     //get result
@@ -121,7 +121,7 @@ class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
     mongoOrdersColl += order
 
     //create query for customer
-    val custQuery = new BasicDBObject();
+    val custQuery = new BasicDBObject
     custQuery.put("id", "1")
     val customerResult: DBObject = mongoCustomersColl.findOne(custQuery).get
     logger.info(customerResult)
@@ -129,7 +129,7 @@ class CasbahTest extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
     customerResult("firstname") should be ("Bastian")
     
     //create query for the customers orders
-    val ordersQuery = new BasicDBObject();
+    val ordersQuery = new BasicDBObject
     ordersQuery.put("customer", customerResult._id)
     val ordersResult: DBObject = mongoOrdersColl.findOne(ordersQuery).get
     logger.info(ordersQuery)

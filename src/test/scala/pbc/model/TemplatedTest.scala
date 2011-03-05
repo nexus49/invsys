@@ -1,10 +1,9 @@
 package pbc.model
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
+import org.scalatest.junit._
+import org.junit._
 import net.liftweb.common.Loggable
-import org.junit.Before
+
 import com.mongodb.casbah.commons.MongoDBObject
-import org.junit.Test
 import java.util.Date
 import pbc.db.CollectionFactory
 

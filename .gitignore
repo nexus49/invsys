@@ -4,3 +4,5 @@ lib_managed/
 .classpath
 .project
 .scala_dependencies
+.ensime*
+ensime*

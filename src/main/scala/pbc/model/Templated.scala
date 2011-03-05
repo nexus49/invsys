@@ -5,14 +5,14 @@ import java.lang.IllegalArgumentException
 import scala.collection.mutable
 
 
-trait Templated extends Loggable {
+trait Templated {
 	def template:Template
 	val valueMap = mutable.Map.empty[String,Object]
 	
 	// sets a attribute that is part of the value map
 	def set (key:String,value:Object)
 	{
-		if (template.attributes .contains(key)) { valueMap + (key -> value) }
+		if (template.attributes .contains(key)) { valueMap += (key -> value) }
 		else throw new IllegalArgumentException("element does not exist")
 	}
 	
@@ -24,7 +24,7 @@ trait Templated extends Loggable {
 		else return null
 	}
 	
-	// I don't link that approach. The Templated trait should be independent from the DBObjects. 
+	// I don't like that approach. The Templated trait should be independent from the DBObjects. 
 	// We should change that to use a map kind of structure
 	def setup(dbObject:DBObject)
 	{
