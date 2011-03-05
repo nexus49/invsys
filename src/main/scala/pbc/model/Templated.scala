@@ -24,10 +24,11 @@ trait Templated {
 	}
 	
 	// Initializes a templated object with key values
-	def setup(values:Map[String,Object])
-	{
+	def setup(values:Map[String,Object]):Templated
+	={
 		values foreach {
 			case (key, value) => valueMap += (key -> value)
 		}
+		this
 	}
 }

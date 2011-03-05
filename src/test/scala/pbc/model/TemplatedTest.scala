@@ -10,9 +10,9 @@ import pbc.db.CollectionFactory
 class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
   val collFac = CollectionFactory
 
-  val template = new Template(List[String]("id", "po_number","serialnumber","department_id","purchase_date"), "inventory")
+  val template = new Template("hardware", "inventory", List[String]("_id", "po_number","serialnumber","department_id","purchase_date"))
   val newObj = MongoDBObject(
-    "id" -> "1234",
+    "_id" -> "1234",
     "po_number" -> "12323",
     "serialnumber" -> "QE-WE-WQ-QWE",
     "department_id" -> "1",
@@ -26,8 +26,8 @@ class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable
   @Test
   def testTemplatedSetup() {
     val inv = new Inventory(template)
-    inv.setup(MongoBased.values(newObj))
-    inv.valueMap.size should be (6)
+    inv.setup(Inventory.values(newObj))
+    inv.valueMap.size should be (5)
   }
   
   @Test
@@ -42,6 +42,24 @@ class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable
     val inv = new Inventory(template)
     inv.get("po_number") should be (null)
     evaluating { inv.get("op_number") } should produce [IllegalArgumentException]
+  }
+  
+  @Test
+  def testSaveNewInventory() {
+    val inv = new Inventory(template)
+    inv.set("_id", "123")
+    inv.set("serialnumber", "123123123")
+    Inventory.save(inv)
+    
+    val item = Inventory.findFirstById("123", template).asInstanceOf[Inventory]
+    item.get("serialnumber") should be("123123123")
+  }
+  
+  @Test
+  def testSaveUpdatedInventory() {
+    //val item = inv.findFirstById("123").asInstanceOf[Inventory]
+    //item.get("serialnumber") should be("123123123")
+    
   }
 
 }

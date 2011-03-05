@@ -3,56 +3,64 @@ package pbc.model
 import com.mongodb.casbah.{MongoCollection, MongoCursorBase}
 import com.mongodb.casbah.Imports._
 import com.mongodb.DBObject
-import com.mongodb.BasicDBObject
-import scala.collection.mutable.MutableList
-import scala.collection.mutable.ListBuffer
-import scala.collection.mutable.MutableList
-import java.lang.reflect.ParameterizedType
+import scala.collection.mutable
+import pbc.db.CollectionFactory
 
-// Adds Dao functionality to a object
+// Adds dao functionality to a object
 trait TemplatedDao {
-	// Collection where the items are stored
-	def collection:MongoCollection
 	// Factory method to create a new instance
-	def fac():MongoBased
+	def fac(dbObject:DBObject, template:Template):Templated
 	
-	def findAll():MutableList[MongoBased] 
+	def findAll(template:Template):List[Templated] 
 	={
-		val valueMap = new MutableList[MongoBased]
-		 for (x <- collection.find)  {
-			 val item = fac()
-			item.create(x)
-			valueMap += (item)
+		val collection = CollectionFactory.getCollection(template.collectionName)
+		val values = new mutable.ListBuffer[Templated]
+		 for (result <- collection.find)  {
+			 val item = fac(result, template)
+			values += (item)
 		 } 
-		return valueMap
+		return values.toList
 	}
 	
-	def findFirstById[T](id:String):MongoBased
+	def findFirstById[T](id:String, template:Template):Templated
 	={
+		val collection = CollectionFactory.getCollection(template.collectionName)
 		val query = new BasicDBObject
 		query.put("_id",id)
 		val result = collection.findOne(query).get
-		val item = fac()
-		item.create(result)
+		val item = fac(result,template)
 		return item
 	}	
 	
 	def save(item:Templated)
 	{
-		val mongoItem = build(item)
+		val collection = CollectionFactory.getCollection(item.template.collectionName)
+		val mongoItem = toDBObject(item)
 		collection+= mongoItem
 	}
 	
 	// Creates a DBOBject from the template
-	private def build(item:Templated):DBObject=
+	private def toDBObject(item:Templated):DBObject=
 	{
 		val builder = MongoDBObject.newBuilder
 		val values = item.valueMap
 		values foreach {
 			case (key, value) => 
-				if(value.isInstanceOf[Templated]) { builder += key -> build(value.asInstanceOf[Templated]) }
+				if(value.isInstanceOf[Templated]) { builder += key -> toDBObject(value.asInstanceOf[Templated]) }
 				else { builder += key -> value }
 		}
 		builder.result.asDBObject
+	}
+	
+	def values(dbObject:DBObject):Map[String,Object]=
+	{
+		val valueMap = mutable.Map.empty[String,Object]
+		val itr = dbObject.keySet.iterator
+		while(itr.hasNext)
+		{
+			val key:String = itr.next 
+			valueMap += (key -> dbObject(key))
+		}
+		return valueMap.toMap
 	}
 }
