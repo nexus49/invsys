@@ -8,7 +8,6 @@ import scala.collection.mutable
 // Simple class to hold a set of keys that template
 // We should enrich that class to hold types for the attributes.
 class Template(val name: String, val collectionName: String, val attributes: List[String]) {
-  import Template._
 }
 object Template {
   val nameColumn = "name"
