@@ -26,7 +26,7 @@ class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable
   @Test
   def testTemplatedSetup() {
     val inv = new Inventory(template)
-    inv.setup(newObj)
+    inv.setup(MongoBased.values(newObj))
     inv.valueMap.size should be (6)
   }
   

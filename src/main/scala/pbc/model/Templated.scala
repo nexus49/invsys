@@ -1,5 +1,4 @@
 package pbc.model
-import com.mongodb.casbah.Imports._
 import net.liftweb.common.Loggable
 import java.lang.IllegalArgumentException
 import scala.collection.mutable
@@ -24,16 +23,11 @@ trait Templated {
 		else return null
 	}
 	
-	// I don't like that approach. The Templated trait should be independent from the DBObjects. 
-	// We should change that to use a map kind of structure
-	def setup(dbObject:DBObject)
+	// Initializes a templated object with key values
+	def setup(values:Map[String,Object])
 	{
-		val keyItr = dbObject.keySet.iterator
-		while(keyItr.hasNext) 
-		{ 
-			val key = keyItr.next
-			val value = dbObject(key)
-			valueMap += (key -> value) 
+		values foreach {
+			case (key, value) => valueMap += (key -> value)
 		}
 	}
 }
