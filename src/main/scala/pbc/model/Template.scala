@@ -27,27 +27,29 @@ object Template {
 
   def findAll(): List[Template] = {
     val values = new mutable.ListBuffer[Template]
-    for (result <- collection.find) {
-      val name: String = result(nameColumn).asInstanceOf
-      val collectionName: String = result(collectionColumn).asInstanceOf
-      val attributes: List[String] = result(attributeColumn).asInstanceOf
+    val queryResult = collection.find
+    while (queryResult.hasNext) {
+      val result = queryResult.next
+      val name: String = result(nameColumn).asInstanceOf[String]
+      val collectionName: String = result(collectionColumn).asInstanceOf[String]
+      val attributes = List(result(attributeColumn).asInstanceOf[BasicDBList].toArray: _*).map(_.asInstanceOf[String]) 
       values += (new Template(name, collectionName, attributes))
     }
     values.toList
   }
-  
-  def save(template:Template) {
-	  val mongoItem = toDBObject(template)
-	  collection -= mongoItem
+
+  def save(template: Template) {
+    val mongoItem = toDBObject(template)
+    collection += mongoItem
   }
-  def delete(name:String) {
-	  val query = new BasicDBObject
-	  query.put(nameColumn, name)
-	  val mongoItem = collection.findOne(query).get
-	  collection -= mongoItem
+  def delete(name: String) {
+    val query = new BasicDBObject
+    query.put(nameColumn, name)
+    val mongoItem = collection.findOne(query).get
+    collection -= mongoItem
   }
-  
-  private def toDBObject(template:Template): DBObject = {
+
+  private def toDBObject(template: Template): DBObject = {
     val builder = MongoDBObject.newBuilder
     builder += nameColumn -> template.name
     builder += collectionColumn -> template.collectionName

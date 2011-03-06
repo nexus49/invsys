@@ -1,0 +1,21 @@
+<lift:surround with="default" at="content">
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Collection Name</th>
+				<th>Attributes</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<lift:templates.listTemplates>
+				<tr>
+					<td><template:name /></td>
+					<td><template:collectionName /></td>
+					<td><template:attributes /></td>
+				</tr>
+			</lift:templates.listTemplates>
+		</tbody>
+	</table>
+</lift:surround>
