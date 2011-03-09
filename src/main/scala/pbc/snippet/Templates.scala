@@ -5,18 +5,20 @@ import scala.xml.NodeSeq
 import net.liftweb.util.Helpers._
 import net.liftweb.http.SHtml
 import net.liftweb.common.Loggable
+import scala.xml.Text
 
 class Templates extends Loggable {
 
   def listTemplates(xhtml: NodeSeq): NodeSeq = {
     val templates: List[Template] = Template.findAll
 
+    def test() { }
     templates.flatMap(template => bind("template", xhtml,
       "name" -> template.name,
       "collectionName" -> template.collectionName,
-      "attributes" -> template.attributes.reduceLeft[String] { (string, n) =>
-        string + "," + n
-      }))
+      "attributes" -> template.attributes.reduceLeft[String] { (string, n) => string + "," + n }, 
+      "edit"-> SHtml.link("/edit",()=> test() ,Text("edit"), ("template_name",template.name ))
+    ))
   }
 
   def add(xhtml: NodeSeq): NodeSeq = {
@@ -24,10 +26,10 @@ class Templates extends Loggable {
     var attributes = ""
 
     def receiveSubmit() {
-    	logger.info(name+" "+attributes)
-    	Template.save(new Template(name, "Inventory", attributes.split(",").toList))
+      logger.info(name + " " + attributes)
+      Template.save(new Template(name, "Inventory", attributes.split(",").toList))
     }
-    
+
     bind("entry", xhtml,
       "name" -> SHtml.text(name, name = _),
       "attributes" -> SHtml.text(attributes, attributes = _),
