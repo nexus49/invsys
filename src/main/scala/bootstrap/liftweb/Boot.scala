@@ -17,8 +17,7 @@ class Boot {
     LiftRules.addToPackages("pbc")
 
     LiftRules.determineContentType = {
-      case (Full(Req("template" :: "list" :: Nil, _, GetRequest)), _) 
-      => "text/html; charset=utf-8"
+      case (Full(Req("template" :: "list" :: Nil, _, GetRequest)), _) => "text/html; charset=utf-8"
       case (Full(Req("tour" :: "edit" :: "view" :: Nil, _, GetRequest)), _) =>
         "text/html; charset=utf-8"
       case (Full(Req("tour" :: "add" :: "view" :: Nil, _, GetRequest)), _) =>
@@ -27,13 +26,13 @@ class Boot {
     }
     // Build SiteMap
     val homeEntries = Menu(Loc("Home", List("index"), "Home")) :: Nil
+   
+    val templatesMenueEntries: List[Menu] = List(
+      Menu(S ? "Template") / "template" / "list" submenus(
+    		Menu(S ? "Add Template") / "template" / "edit" ))
 
-    val templatesMenueEntries:List[Menu] = List(
-      Menu("template_view", "Show Templates") / "template" / "list" >> LocGroup("template"))
+    val entries = homeEntries ::: templatesMenueEntries
 
-     val entries = homeEntries ::: templatesMenueEntries
-            
-    
     LiftRules.setSiteMap(SiteMap(entries: _*))
   }
 }
