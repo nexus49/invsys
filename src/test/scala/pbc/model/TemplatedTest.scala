@@ -10,7 +10,7 @@ import pbc.db.CollectionFactory
 class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
   val collFac = CollectionFactory
 
-  val template = new Template("hardware", "inventory", List[String]("_id", "po_number","serialnumber","department_id","purchase_date"))
+  val template = new Template(None,"hardware", "inventory", List[String]("_id", "po_number","serialnumber","department_id","purchase_date"))
   val newObj = MongoDBObject(
     "_id" -> "1234",
     "po_number" -> "12323",

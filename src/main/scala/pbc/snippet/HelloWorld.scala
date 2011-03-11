@@ -9,7 +9,7 @@ import scala.xml.Text
 class HelloWorld {
   def howdy(in: NodeSeq): NodeSeq = {
     val x = bind("b", in,
-      "templates" -> SHtml.link("template/list", null, Text("Templates")),
+      "templates" -%> SHtml.link("template/list", null, Text("Templates")),
       "time" -> new Date().toString)
     x
   }
