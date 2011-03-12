@@ -29,7 +29,10 @@ class Boot {
    
     val templatesMenueEntries: List[Menu] = List(
       Menu(S ? "Template") / "template" / "list" submenus(
-    		Menu(S ? "Add Template") / "template" / "edit" ))
+    		Menu(S ? "Add Template") / "template" / "edit", 
+    		Menu(S ? "Delete Template") / "template" / "delete"
+      		)
+    	)
 
     val entries = homeEntries ::: templatesMenueEntries
 
