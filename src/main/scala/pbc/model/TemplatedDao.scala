@@ -5,11 +5,30 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.DBObject
 import scala.collection.mutable
 import pbc.db.CollectionFactory
+import net.liftweb.common.Loggable
 
 // Adds dao functionality to a object
-trait TemplatedDao {
+trait TemplatedDao extends Loggable {
   // Factory method to create a new instance
   def fac(dbObject: DBObject, template: Template): Templated
+
+  def findAll(): List[Templated] = {
+    val templates = Template.findAll
+    val values = new mutable.ListBuffer[Templated]
+
+    templates.foreach(t =>
+      {
+        logger.info(t.name)
+        val collection = CollectionFactory.getCollection(t.collectionName)
+
+        for (result <- collection.find) {
+          val item = fac(result, t)
+          values += (item)
+        }
+
+      })
+    return values.toList
+  }
 
   def findAll(template: Template): List[Templated] = {
     val collection = CollectionFactory.getCollection(template.collectionName)
@@ -21,18 +40,30 @@ trait TemplatedDao {
     return values.toList
   }
 
-  def findFirstById[T](id: String, template: Template): Templated = {
+  def findFirstById[T](id: ObjectId, template: Template): Templated = {
     val collection = CollectionFactory.getCollection(template.collectionName)
-    val query = new BasicDBObject
-    query.put("_id", id)
-    val result = collection.findOne(query).get
-    val item = fac(result, template)
-    return item
+    val result = collection.findOneByID(id)
+    
+    if (!result.isEmpty)
+    {
+    	val item = fac(result.get, template)
+    	return item
+    }
+    else { return null }
   }
 
   def save(item: Templated) {
     val collection = CollectionFactory.getCollection(item.template.collectionName)
     val mongoItem = toDBObject(item)
+    if (item.id == null) {
+      val result = collection.save(mongoItem)
+      item.id = mongoItem._id.get
+      logger.info("inserted Inventory " + result)
+    } else {
+      val result = collection.update(MongoDBObject.apply(CollectionFactory.idColumn -> item.id), mongoItem)
+      logger.info("updated Inventory " + result)
+    }
+    
     collection += mongoItem
   }
 

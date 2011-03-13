@@ -2,20 +2,26 @@
 	<table>
 		<thead>
 			<tr>
-				<th>Name</th>
-				<th>Collection Name</th>
-				<th>Attributes</th>
+				<th>Inventory</th>
 			</tr>
 		</thead>
 
 		<tbody>
 			<lift:inventorySnippet.list>
 				<tr>
-					<td><template:name /></td>
-					<td><template:collectionName /></td>
-					<td><template:attributes /></td>
-					<td><template:edit /></td>
-					<td><template:delete /></td>
+					<inv:Template />
+					<table>
+					<thead>
+					<tr>
+					<th>Name</th>	
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+					<inv:Name />
+					</tr>
+					</tbody>
+					</table>
 				</tr>
 			</lift:inventorySnippet.list>
 		</tbody>

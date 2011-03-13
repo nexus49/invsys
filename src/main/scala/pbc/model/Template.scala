@@ -12,7 +12,6 @@ class Template(var id: ObjectId, var name: String, var collectionName: String, v
   override def toString(): String = { "Template(%s,%s,%s,%s)".format(id, name, collectionName, attributes.toString) }
 }
 object Template extends Loggable {
-  val idColumn = "_id"
   val nameColumn = "name"
   val collectionColumn = "collectionName"
   val attributeColumn = "attributes"
@@ -57,12 +56,12 @@ object Template extends Loggable {
       template.id = mongoItem._id.get
       logger.info("inserted template " + result)
     } else {
-      val result = collection.update(MongoDBObject.apply(idColumn -> template.id), mongoItem)
+      val result = collection.update(MongoDBObject.apply(CollectionFactory.idColumn -> template.id), mongoItem)
       logger.info("updated template " + result)
     }
   }
   def delete(id: ObjectId) {
-    val result = collection.remove(MongoDBObject.apply(idColumn -> id))
+    val result = collection.remove(MongoDBObject.apply(CollectionFactory.idColumn -> id))
     logger.info("deleted template " + result)
   }
 

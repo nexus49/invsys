@@ -2,9 +2,11 @@ package pbc.model
 import net.liftweb.common.Loggable
 import java.lang.IllegalArgumentException
 import scala.collection.mutable
+import org.bson.types.ObjectId
 
 
 trait Templated {
+	var id:ObjectId = null
 	def template:Template
 	val valueMap = mutable.Map.empty[String,Object]
 	
