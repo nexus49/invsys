@@ -16,17 +16,17 @@ import org.bson.types.ObjectId
 
 object templateVar extends RequestVar[Template](null)
 
-class Templates extends StatefulSnippet with Loggable {
+class TemplateSnippet extends StatefulSnippet with Loggable {
 
   val dispatch: DispatchIt = {
-    case "add" => add _
-    case "listTemplates" => listTemplates _
+    case "edit" => edit _
+    case "list" => list _
     case "delete" => delete _
   }
 
   def template() = { templateVar.is }
 
-  def listTemplates(xhtml: NodeSeq): NodeSeq = {
+  def list(xhtml: NodeSeq): NodeSeq = {
     val templates: List[Template] = Template.findAll
 
     templates.flatMap(template => bind("template", xhtml,
@@ -37,7 +37,7 @@ class Templates extends StatefulSnippet with Loggable {
       "delete" -%> SHtml.link("delete", () => templateVar(template), Text("delete"))))
   }
 
-  def add(xhtml: NodeSeq): NodeSeq = {
+  def edit(xhtml: NodeSeq): NodeSeq = {
     var id: String = if (template != null) template.id.toString else ""
     var name = if (template != null) template.name else ""
     var attributes = if (template != null) template.attributes.reduceLeft[String] { (string, n) => string + "," + n } else ""

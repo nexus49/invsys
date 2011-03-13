@@ -6,6 +6,7 @@ import _root_.net.liftweb.http._
 import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
 import Helpers._
+import net.liftweb.sitemap.Menu.PreMenu
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -28,13 +29,20 @@ class Boot {
     val homeEntries = Menu(Loc("Home", List("index"), "Home")) :: Nil
    
     val templatesMenueEntries: List[Menu] = List(
-      Menu(S ? "Template") / "template" / "list" submenus(
-    		Menu(S ? "Add Template") / "template" / "edit", 
-    		Menu(S ? "Delete Template") / "template" / "delete"
+    		Menu(S ? "Template") / "template" / "list" submenus(
+    				Menu(S ? "Add Template") / "template" / "edit", 
+    				Menu(S ? "Delete Template") / "template" / "delete"
+      			)
       		)
-    	)
 
-    val entries = homeEntries ::: templatesMenueEntries
+    val inventoryMenueEntries: List[Menu] = List(
+    		Menu(S ? "Inventory") / "inventory" / "list" submenus(
+    				Menu(S ? "Add Inventory") / "inventory" / "edit"
+      			)
+      		)
+
+      		
+    val entries = homeEntries ::: templatesMenueEntries ::: inventoryMenueEntries
 
     LiftRules.setSiteMap(SiteMap(entries: _*))
   }
