@@ -6,3 +6,5 @@ lib_managed/
 .scala_dependencies
 .ensime*
 ensime*
+.idea/
+*.iml
