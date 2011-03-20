@@ -3,9 +3,8 @@ import org.scalatest.junit._
 import org.junit._
 import net.liftweb.common.Loggable
 import com.mongodb.casbah.commons.MongoDBObject
-import java.util.Date
 import pbc.db.CollectionFactory
-import pbc.db.UnitTestCollectionFactory
+import com.mongodb.casbah.Imports._
 
 class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable {
   val collFac = CollectionFactory
@@ -25,15 +24,15 @@ class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable
   @Test
   def testTemplatedSetup() {
     val inv = new Inventory(hardwareTmpl)
-    val dbo = collFac.getCollection("Inventory").findOne(MongoDBObject.apply(("Name" -> "Jira")))
-    inv.setup(Inventory.values(dbo.get))
-    inv.valueMap.size should be(4)
+    val dbo:DBObject = collFac.getCollection("Inventory").findOne(MongoDBObject.apply(("Name" -> "Jira"))).get
+    inv.setup(dbo._id.get, Inventory.values(Inventory.values(dbo)))
+    inv.valueMap.size should be(5)
   }
 
   @Test
   def testTemplatedSet() {
     val inv = new Inventory(hardwareTmpl)
-    inv.set("Serial Number", "11111")
+    inv.set("Serial Number", "111111")
     evaluating { inv.set("op_number", "11111") } should produce[IllegalArgumentException]
   }
 
@@ -46,7 +45,7 @@ class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable
 
   @Test
   def testSaveNewInventory() {
-    val inv = new Inventory(hardwareTmpl)
+    val inv = Inventory.findAll(hardwareTmpl).head
     inv.set("Serial Number", "123123123")
     Inventory.save(inv)
     val id = inv.id

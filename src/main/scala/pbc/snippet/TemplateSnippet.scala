@@ -7,7 +7,7 @@ import net.liftweb.common.Loggable
 import scala.xml.Text
 import net.liftweb.http.RequestVar
 import _root_.net.liftweb._
-import common.{ Box }
+import common.{Box}
 import http._
 import S._
 import util._
