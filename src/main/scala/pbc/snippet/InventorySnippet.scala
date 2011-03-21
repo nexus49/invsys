@@ -25,11 +25,21 @@ class InventorySnippet extends StatefulSnippet with Loggable {
 
     val allTemplates: List[Template] = Template.findAll
     allTemplates.flatMap(template => {
+
+      val attrsNames: List[String] = List[String]("Id") ::: template.attributes
+      val attrsValues: List[String] = List[String]("_id") ::: template.attributes
+
       bind("a", xhtml,
         "name" -> template.name,
-        "inventory" -> Inventory.findAll(template).flatMap(inv =>
-          bind("inv", chooseTemplate("inv", "list", xhtml), "id" -> inv.id.toString, "name" -> inv.get("Name").asInstanceOf[String]
-        )))})
+        "header" -> attrsNames.flatMap(attr => bind("attr", chooseTemplate("attr", "list", xhtml),
+          "name" -> attr)),
+          "inventory" -> Inventory.findAll(template).flatMap(inv => bind("inv", chooseTemplate("inv", "list", xhtml),
+            "id" -> inv.id.toString,
+            "name" -> inv.get("Name").asInstanceOf[String],
+            "columns" -> attrsValues.flatMap(col => bind("col", chooseTemplate("col", "list", xhtml),
+              "value" -> inv.get(col).toString))
+          )))
+    })
   }
 
   def edit(xhtml: NodeSeq): NodeSeq = {

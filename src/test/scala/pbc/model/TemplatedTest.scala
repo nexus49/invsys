@@ -33,14 +33,14 @@ class TemplateTests extends JUnitSuite with ShouldMatchersForJUnit with Loggable
   def testTemplatedSet() {
     val inv = new Inventory(hardwareTmpl)
     inv.set("Serial Number", "111111")
-    evaluating { inv.set("op_number", "11111") } should produce[IllegalArgumentException]
+    evaluating { inv.set("op_number", "111111") } should produce[IllegalArgumentException]
   }
 
   @Test
   def testTemplatedGet() {
     val inv = new Inventory(hardwareTmpl)
     inv.get("Serial Number") should be(null)
-    evaluating { inv.get("op_number") } should produce[IllegalArgumentException]
+    inv.get("op_number") should be (None)
   }
 
   @Test

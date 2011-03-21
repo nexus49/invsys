@@ -3,6 +3,7 @@ import net.liftweb.common.Loggable
 import java.lang.IllegalArgumentException
 import scala.collection.mutable
 import org.bson.types.ObjectId
+import pbc.db.CollectionFactory
 
 
 trait Templated {
@@ -14,13 +15,15 @@ trait Templated {
 	def set (key:String,value:Object)
 	{
 		if (template.attributes .contains(key)) { valueMap += (key -> value) }
-		else throw new IllegalArgumentException("element does not exist")
+		else throw new IllegalArgumentException
 	}
 	
 	// returns a value that is part of the valuesMap
 	def get (key:String):Object =
 	{
-		if (!template.attributes .contains(key)) { throw new IllegalArgumentException("element does not exist") }
+		if (key == CollectionFactory.idColumn) { return this.id }
+    if (!template.attributes .contains(key)) { return None }
+
 		if(valueMap .contains(key)) return valueMap(key) 
 		else return null
 	}
